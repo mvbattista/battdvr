@@ -1,0 +1,4 @@
+CBS:
+On show page:
+$('.seasons-carousel .wp-tooltip')
+-> get href from list of <a>
