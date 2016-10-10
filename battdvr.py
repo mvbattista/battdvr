@@ -93,7 +93,7 @@ def ytdl_hook(d):
 # download_format = 'youtube-dl -o "%(series)s - %(season_number)sx%(episode_number)s - %(title)s.%(ext)s" '
 
 for show in all_shows:
-    constructor = globals()[PROCESSOR_FOR[show['network']]]
+    constructor = PROCESSOR_FOR[show['network']]
     print('[{}]'.format(show['url']))
     show_processor = constructor()
     show_processor.load_show(**show)

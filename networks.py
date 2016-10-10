@@ -9,19 +9,13 @@ import youtube_dl
 
 from bs4 import BeautifulSoup
 
-PROCESSOR_FOR = {
-    'cw': 'CWProcessor',
-    'cbs': 'CBSProcessor',
-    'abc': 'ABCProcessor',
-    'fox': 'FOXProcessor',
-}
 HOME_DIRECTORY = '/Volumes/Public/Video/TV Shows/'
 
         
 class BaseNetwork(object):
     """docstring for base network"""
 
-    def __init__(self, **kwargs):
+    def __init__(self):
         self.show_name = None
         self.series_directory = None
         self.has_season = True
@@ -167,8 +161,8 @@ class FOXProcessor(BaseNetwork):
     """docstring for FOX"""
     tld = 'http://www.fox.com/'
 
-    def __init__(self, **kwargs):
-        super().__init__()
+    def __init__(self):
+        super(FOXProcessor, self).__init__()
         self.has_season = False
         self.has_episode_number = False
 
@@ -209,3 +203,10 @@ class ABCProcessor(BaseNetwork):
 
         return result
 
+
+PROCESSOR_FOR = {
+    'cw': CWProcessor,
+    'cbs': CBSProcessor,
+    'abc': ABCProcessor,
+    'fox': FOXProcessor,
+}
