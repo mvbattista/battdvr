@@ -49,7 +49,7 @@ shield = 'http://abc.go.com/shows/marvels-agents-of-shield/episode-guide'
 
 superstore = 'http://www.nbc.com/superstore/episodes'
 timeless = 'http://www.nbc.com/timeless/episodes'
-good_place = 'http://www.nbc.com/the-good-place/episode'
+good_place = 'http://www.nbc.com/the-good-place/episodes'
 
 all_shows = [
 {'network': 'cw', 'url': lot, 'show_name':'Legends of Tomorrow'},
