@@ -1,0 +1,143 @@
+[
+  {
+    "network": "cw",
+    "url": "http://www.cwtv.com/shows/dcs-legends-of-tomorrow/",
+    "show_name": "Legends of Tomorrow"
+  },
+  {
+    "network": "cw",
+    "url": "http://www.cwtv.com/shows/arrow/"
+  },
+  {
+    "network": "cw",
+    "url": "http://www.cwtv.com/shows/the-flash/",
+    "series_directory": "The Flash (2014)"
+  },
+  {
+    "network": "cw",
+    "url": "http://www.cwtv.com/shows/supergirl/"
+  },
+  {
+    "network": "cbs",
+    "url": "http://www.cbs.com/shows/big_bang_theory/video/"
+  },
+  {
+    "network": "cbs",
+    "url": "http://www.cbs.com/shows/2_broke_girls/video/"
+  },
+  {
+    "network": "cbs",
+    "url": "http://www.cbs.com/shows/kevin-can-wait/video/"
+  },
+  {
+    "network": "cbs",
+    "url": "http://www.cbs.com/shows/scorpion/video/"
+  },
+  {
+    "network": "cbs",
+    "url": "http://www.cbs.com/shows/the-odd-couple/video/"
+  },
+  {
+    "network": "cbs",
+    "url": "http://www.cbs.com/shows/mom/video/"
+  },
+  {
+    "network": "cbs",
+    "url": "http://www.cbs.com/shows/macgyver/video/",
+    "series_directory": "MacGyver (2016)"
+  },
+  {
+    "network": "cbs",
+    "url": "http://www.cbs.com/shows/bull/video/"
+  },
+  {
+    "network": "cbs",
+    "url": "http://www.cbs.com/shows/the-great-indoors/video/"  
+  },
+  {
+    "network": "abc",
+    "url": "http://abc.go.com/shows/blackish/episode-guide",
+    "show_name": "Blackish"
+  },
+  {
+    "network": "abc",
+    "url": "http://abc.go.com/shows/the-middle/episode-guide"
+  },
+  {
+    "network": "abc",
+    "url": "http://abc.go.com/shows/american-housewife/episode-guide"
+  },
+  {
+    "network": "abc",
+    "url": "http://abc.go.com/shows/modern-family/episode-guide"
+  },
+  {
+    "network": "abc",
+    "url": "http://abc.go.com/shows/marvels-agents-of-shield/episode-guide",
+    "series_directory": "Marvel/Agents of S.H.I.E.L.D."
+  },
+  {
+    "network": "abc",
+    "url": "http://abc.go.com/shows/designated-survivor/episode-guide/"
+  },
+  {
+    "network": "fox",
+    "url": "http://www.fox.com/gotham/full-episodes",
+    "show_name": "Gotham"
+  },
+  {
+    "network": "fox",
+    "url": "http://www.fox.com/new-girl/full-episodes",
+    "show_name": "New Girl"
+  },
+  {
+    "network": "fox",
+    "url": "http://www.fox.com/family-guy/full-episodes",
+    "show_name": "Family Guy"
+  },
+  {
+    "network": "fox",
+    "url": "http://www.fox.com/lucifer/full-episodes",
+    "show_name": "Lucifer"
+  },
+  {
+    "network": "fox",
+    "url": "http://www.fox.com/pitch/full-episodes",
+    "show_name": "Pitch"
+  },
+  {
+    "network": "fox",
+    "url": "http://www.fox.com/son-of-zorn/full-episodes",
+    "show_name": "Son of Zorn"
+  },
+  {
+    "network": "fox",
+    "url": "http://www.fox.com/brooklyn-nine-nine/full-episodes",
+    "show_name": "Brooklyn Nine Nine"
+  },
+  {
+    "network": "fox",
+    "url": "http://www.fox.com/bobs-burgers/full-episodes",
+    "show_name": "Bob's Burgers"
+  },
+  {
+    "network": "fox",
+    "url": "http://www.fox.com/the-simpsons/full-episodes",
+    "show_name": "The Simpsons"
+  },
+  {
+    "network": "nbc",
+    "url": "http://www.nbc.com/superstore/episodes",
+    "show_name": "Superstore"
+  },
+  {
+    "network": "nbc",
+    "url": "http://www.nbc.com/timeless/episodes",
+    "show_name": "Timeless"
+  },
+  {
+    "network": "nbc",
+    "url": "http://www.nbc.com/the-good-place/episodes",
+    "show_name": "The Good Place"
+  }
+]
