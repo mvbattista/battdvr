@@ -1,0 +1,8 @@
+setuptools
+python_Levenshtein
+beautifulsoup4
+fuzzywuzzy
+lxml
+pycrypto
+Requests
+youtube_dl

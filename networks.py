@@ -145,7 +145,7 @@ class BaseNetwork(object):
 
 class CWProcessor(BaseNetwork):
     """docstring for CW"""
-    tld = 'http://www.cwtv.com/'
+    tld = 'http://www.cwtv.com'
     network = 'The CW'
 
     def __init__(self, **kwargs):
@@ -168,7 +168,7 @@ class CWProcessor(BaseNetwork):
 
 class CBSProcessor(BaseNetwork):
     """docstring for CBS"""
-    tld = 'http://www.cbs.com/'
+    tld = 'http://www.cbs.com'
     network = 'CBS'
 
     def get_links(self, url):
@@ -225,7 +225,7 @@ class CBSProcessor(BaseNetwork):
 
 class OldFOXProcessor(BaseNetwork):
     """docstring for FOX"""
-    tld = 'http://www.fox.com/'
+    tld = 'http://www.fox.com'
     network = 'FOX'
     episode_div = 'SeriesDetail_tabContent'
 
@@ -245,7 +245,7 @@ class OldFOXProcessor(BaseNetwork):
         data = r.text
         soup = BeautifulSoup(data, 'lxml')
         all_links = []
-        episode_wrapper_div = next(iter(soup.select("div[class^=" + self.episode_div + "]")),None)
+        episode_wrapper_div = next(iter(soup.select("div[class^=" + self.episode_div + "]")), None)
         try:
             for link in episode_wrapper_div.find_all('a'):
                 all_links.append(urljoin(self.tld, link.get('href')))
@@ -269,7 +269,7 @@ class FXProcessor(OldFOXProcessor):
 
 
 class FOXProcessor(BaseNetwork):
-    tld = 'https://www.fox.com/'
+    tld = 'https://www.fox.com'
     network = 'FOX'
 
     def __init__(self, **kwargs):
@@ -280,7 +280,7 @@ class FOXProcessor(BaseNetwork):
         url_path = urlparse(url).path.lstrip('/')
         series_alias = url_path.split('/')[0]
         series_info_url = 'https://api.fox.com/fbc-content/v1_4/series/{}'.format(series_alias)
-        network_headers = {'apiKey':'abdcbed02c124d393b39e818a4312055'}
+        network_headers = {'apiKey': 'abdcbed02c124d393b39e818a4312055'}
         series_info_r = requests.get(series_info_url, headers=network_headers)
         series_data = series_info_r.json()
         latest_season = series_data['latestEpisode']['seasonNumber']
@@ -302,7 +302,7 @@ class FOXProcessor(BaseNetwork):
 
 class ABCProcessor(BaseNetwork):
     """docstring for ABC"""
-    tld = 'http://abc.go.com/'
+    tld = 'http://abc.go.com'
     network = 'ABC'
 
     def get_links(self, url):
@@ -342,6 +342,7 @@ class NBCProcessor(BaseNetwork):
 
         return result
 
+
 class SyFyProcessor(BaseNetwork):
     tld = 'http://www.syfy.com'
     network = 'SyFy'
@@ -366,3 +367,25 @@ class SyFyProcessor(BaseNetwork):
         return result
 
 
+class CrackleProcessor(BaseNetwork):
+    tld = 'http://www.crackle.com'
+    network = 'Crackle'
+    # Visiting the URL to download will allow the file to be downloaded
+
+    def get_links(self, url):
+        show_slug = urlparse(url).path.split('/')[1]
+        show_api_url = 'https://web-api-us.crackle.com/Service.svc/playback/channel/{}/US?format=json'
+        show_r = requests.get(show_api_url.format(show_slug))
+        show_data = show_r.json()
+        if show_data['status']['messageCode'] != '0':
+            return []
+        show_id = show_data['Result']['ChannelId']
+        episode_api_url = 'https://web-api-us.crackle.com/Service.svc/channel/{}/playlists/all/US?format=json'
+        episode_r = requests.get(episode_api_url.format(show_id))
+        episode_data = episode_r.json()
+        if episode_data['Status']['messageCode'] != '0':
+            return []
+        episode_playlist = [x for x in episode_data['Playlists'] if x['PlaylistName'] == 'Episodes'][0]
+        episode_ids = [x['MediaInfo']['Id'] for x in episode_playlist['Items']]
+        result = ['/'.join((self.tld, show_slug, str(x))) for x in episode_ids]
+        return result
