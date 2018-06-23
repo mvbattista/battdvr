@@ -389,3 +389,12 @@ class CrackleProcessor(BaseNetwork):
         episode_ids = [x['MediaInfo']['Id'] for x in episode_playlist['Items']]
         result = ['/'.join((self.tld, show_slug, str(x))) for x in episode_ids]
         return result
+
+
+class DiscoveryProcessor(OldFOXProcessor):
+    tld = 'https://www.discovery.com'
+    network = 'Discovery'
+
+    def __init__(self, **kwargs):
+        super(DiscoveryProcessor, self).__init__(**kwargs)
+        self.episode_div = 'video-carousel'
