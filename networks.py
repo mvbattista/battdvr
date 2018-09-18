@@ -73,8 +73,9 @@ class BaseNetwork(object):
             extension = ydl_info['ext']
 
             # Escape forward slashes in title
-            # This doesn't work.
-            # title = title.replace('/', '\/')
+            # I don't know why, but, for some reason, this works.
+            # It doesn't show on the terminal, but the files get named right.
+            title = title.replace('/', ':')
 
         # if self.has_season and self.has_episode_number:
             filename = "{} - {}x{} - {}.{}".format(show, season_number, season_episode_number, title, extension)
@@ -304,6 +305,13 @@ class ABCProcessor(BaseNetwork):
     """docstring for ABC"""
     tld = 'http://abc.go.com'
     network = 'ABC'
+
+    def __init__(self, **kwargs):
+        super(ABCProcessor, self).__init__(**kwargs)
+        self.extra_opts = {
+            'geo_bypass': False
+        }
+
 
     def get_links(self, url):
         r = requests.get(url)
