@@ -175,35 +175,41 @@ class CBSProcessor(BaseNetwork):
     def get_links(self, url):
         r = requests.get(url)
         data = r.text
-        video_json = None
-        for item in data.split("\n"):
-            if 'section_metadata' in item and 'var $module' in item:
-                video_json = item
+        soup = BeautifulSoup(data, 'lxml')
+        latest_episodes = soup.find(id='latest-episodes')
+        if latest_episodes:
+            season = latest_episodes.attrs.get('data-season')
+            slug = latest_episodes.attrs.get('data-slug')
+        else:
+            # Older version, not using carousel sections.
+            video_json = None
+            for item in data.split("\n"):
+                if 'section_metadata' in item and 'var $module' in item:
+                    video_json = item
 
-        if video_json is None:
-            return []
-        video_json = video_json.strip()
-        video_json = video_json[video_json.startswith('var $module = ') and
-                                len('var $module = '):]
-        video_json = video_json.rstrip(';')
-        video_json_data = json.loads(video_json).get('section_metadata', {})
+            if video_json is None:
+                return []
+            video_json = video_json.strip()
+            video_json = video_json[video_json.startswith('var $module = ') and
+                                    len('var $module = '):]
+            video_json = video_json.rstrip(';')
+            video_json_data = json.loads(video_json)
+            season = video_json_data.get('video', {}).get('season_number')
+            slug = video_json_data.get('base_url_video', '///').split('/')[2]
 
-        video_section_id = None
-        for section_id, section_data in video_json_data.items():
-            if section_data['title'] == 'Full Episodes':
-                video_section_id = section_id
-                break
-        if video_section_id is None:
-            return []
+            if not season or not slug:
+                return []
 
         offset = 0
         page_limit = 15
         first_loop = True
         total_episodes = 0
         result = []
-        api_url = '/carousels/videosBySection/{}/offset/{}/limit/{}/xs/0/'
+
+        api_url = '/shows/{slug}/xhr/episodes/page/{page}/size/{page_limit}/xs/0/season/{season}/'
         while True:
-            episodes_url = urljoin(self.tld, api_url.format(video_section_id, offset, page_limit))
+            episodes_url = urljoin(self.tld, api_url.format(slug=slug, page=offset, page_limit=page_limit,
+                                                            season=season))
             episodes_r = requests.get(episodes_url)
             episodes_data = json.loads(episodes_r.text)
 
@@ -214,14 +220,17 @@ class CBSProcessor(BaseNetwork):
                     result.append(urljoin(self.tld, episode['url']))
 
             if offset + page_limit < total_episodes:
-                offset += page_limit
+                offset += 1
                 first_loop = False
             else:
                 break
         return result
 
     def rename_title(self, title):
-        return title.split(' - ', 1)[1]
+        try:
+            return title.split(' - ', 1)[1]
+        except IndexError:
+            return title.split('-', 1)[1].strip()
 
 
 class OldFOXProcessor(BaseNetwork):
@@ -357,9 +366,9 @@ class SyFyProcessor(BaseNetwork):
 
     def __init__(self, **kwargs):
         super(SyFyProcessor, self).__init__(**kwargs)
-        self.has_season = False
-        self.has_episode_number = False
-        self.data_from_tvmaze = True
+        # self.has_season = False
+        # self.has_episode_number = False
+        # self.data_from_tvmaze = True
         if not self.show_name:
             raise ValueError('show_name required for SyFy shows.')
 
