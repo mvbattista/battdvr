@@ -216,7 +216,7 @@ class CBSProcessor(BaseNetwork):
             if first_loop:
                 total_episodes = episodes_data['result']['total']
             for episode in episodes_data['result']['data']:
-                if not episode['is_paid_content']:
+                if not episode['is_paid_content'] and episode['type'] == 'Full Episode':
                     result.append(urljoin(self.tld, episode['url']))
 
             if offset + page_limit < total_episodes:
@@ -284,19 +284,24 @@ class FOXProcessor(BaseNetwork):
 
     def __init__(self, **kwargs):
         super(FOXProcessor, self).__init__(**kwargs)
+        if os.path.isfile('fox_cookies.txt'):
+            self.extra_opts = {
+                'cookiefile': os.path.abspath('fox_cookies.txt'),
+                # 'verbose': True
+            }
         pass
 
     def get_links(self, url):
         url_path = urlparse(url).path.lstrip('/')
         series_alias = url_path.split('/')[0]
-        series_info_url = 'https://api.fox.com/fbc-content/v1_4/series/{}'.format(series_alias)
-        network_headers = {'apiKey': 'abdcbed02c124d393b39e818a4312055'}
+        series_info_url = 'https://api2.fox.com/v2.0/series/{}'.format(series_alias)
+        network_headers = {'x-api-key': 'abdcbed02c124d393b39e818a4312055'}
         series_info_r = requests.get(series_info_url, headers=network_headers)
         series_data = series_info_r.json()
-        latest_season = series_data['latestEpisode']['seasonNumber']
+        latest_season = series_data['currentSeason']['seasonNumber']
         oldest_season = series_data['oldestEpisode'].get('seasonNumber', latest_season)
         result = []
-        episodes_url = 'https://api.fox.com/fbc-content/v1_4/seasons/{}/episodes/'
+        episodes_url = 'https://api2.fox.com/v2.0/seasons/{}/episodes/'
         watch_url = 'https://www.fox.com/watch/{}'
         for x in range(oldest_season, latest_season + 1):
             season = str(x).zfill(2)
@@ -327,10 +332,13 @@ class ABCProcessor(BaseNetwork):
         data = r.text
         soup = BeautifulSoup(data, 'lxml')
         result = []
-        episode_wrapper_div = soup.find_all('div', 'm-episode')
-        for link in episode_wrapper_div:
-            if link.get('data-video-id'):
-                result.append(urljoin(self.tld, link.get('data-url')))
+        episode_divs = soup.find_all('div', 'tilegroup--shows')
+        for episode_div in episode_divs:
+            links = episode_div.find_all('a')
+            for link in links:
+                # if link.get('data-video-id'):
+                    result.append(urljoin(self.tld, link.get('href')))
+                    # result.append(urljoin(self.tld, link.get('data-url')))
 
         return result
 
@@ -342,22 +350,55 @@ class NBCProcessor(BaseNetwork):
 
     def __init__(self, **kwargs):
         super(NBCProcessor, self).__init__(**kwargs)
-        self.has_season = False
-        self.has_episode_number = False
-        self.data_from_tvmaze = True
-        if not self.show_name:
-            raise ValueError('show_name required for NBC shows.')
+        # self.has_season = False
+        # self.has_episode_number = False
+        # self.data_from_tvmaze = True
+        # if not self.show_name:
+        #     raise ValueError('show_name required for NBC shows.')
 
     def get_links(self, url):
-        r = requests.get(url)
-        data = r.text
-        soup = BeautifulSoup(data, 'lxml')
+        url_path = urlparse(url).path.lstrip('/')
+        series_alias = url_path.split('/')[0]
+        series_info_url = 'https://api.nbc.com/v3.14/shows'
+        series_info_r = requests.get(series_info_url, params={'filter[name]': series_alias})
+        series_data = series_info_r.json()
+        series_id = series_data['data'][0]['id']
+        episode_params = {
+            'filter[show]': series_id,
+            'filter[type][value]': 'Full Episode',
+            'page[number]': 1,
+            'page[size]': 10
+        }
+        next_in_resp = True
         result = []
-        for episode in soup.find_all('article'):
-            link = episode.find('a')
-            result.append(urljoin(self.tld, link.get('href')))
+        episode_url = 'https://api.nbc.com/v3.14/videos'
+        while next_in_resp:
+            if episode_params:
+                episode_r = requests.get(episode_url, params=episode_params)
+            else:
+                episode_r = requests.get(episode_url)
+            episode_data = episode_r.json()
+            for episode in episode_data.get('data', []):
+                # episode_id = episode['id']
+                result.append(episode['attributes']['fullUrl'])
+            if 'next' not in episode_data['links']:
+                # mediaURL or fullURL
+                next_in_resp = False
+            else:
+                episode_params = None
+                episode_url = episode_data['links']['next']
+
+        # r = requests.get(url)
+        # data = r.text
+        # soup = BeautifulSoup(data, 'lxml')
+        # result = []
+        # for episode in soup.find_all('article'):
+        #     link = episode.find('a')
+        #     result.append(urljoin(self.tld, link.get('href')))
 
         return result
+
+
 
 
 class SyFyProcessor(BaseNetwork):
@@ -368,7 +409,7 @@ class SyFyProcessor(BaseNetwork):
         super(SyFyProcessor, self).__init__(**kwargs)
         # self.has_season = False
         # self.has_episode_number = False
-        # self.data_from_tvmaze = True
+        self.data_from_tvmaze = True
         if not self.show_name:
             raise ValueError('show_name required for SyFy shows.')
 
@@ -406,3 +447,11 @@ class CrackleProcessor(BaseNetwork):
         episode_ids = [x['MediaInfo']['Id'] for x in episode_playlist['Items']]
         result = ['/'.join((self.tld, show_slug, str(x))) for x in episode_ids]
         return result
+
+class AdultSwimProcessor(BaseNetwork):
+    tld = 'http://www.adultswim.com'
+    network = 'Adult Swim'
+
+    def get_links(self, url):
+        pass
+
