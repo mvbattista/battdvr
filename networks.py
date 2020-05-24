@@ -414,13 +414,23 @@ class SyFyProcessor(BaseNetwork):
             raise ValueError('show_name required for SyFy shows.')
 
     def get_links(self, url):
-        r = requests.get(url)
-        data = r.text
-        soup = BeautifulSoup(data, 'lxml')
+        pagination_url = url
         result = []
-        for episode in soup.find_all('div', class_='syfy-watch Watch-Full-Episode'):
-            link = episode.find('a')
-            result.append(link.get('href'))
+        while pagination_url:
+            r = requests.get(pagination_url)
+            data = r.text
+            soup = BeautifulSoup(data, 'lxml')
+            # view-display-id-pane_related_episodes_by_show
+            episodes = soup.find('div', class_='view-full-episodes')
+            for episode in episodes.find_all('div', class_='grid-item'):
+                link = episode.find('a')
+                result.append(urljoin(self.tld, link.get('href')))
+            next_page = episodes.find('li', class_='pager-next')
+            next_link = next_page.find('a')
+            if next_link:
+                pagination_url = urljoin(self.tld, next_link.get('href'))
+            else:
+                pagination_url = None
 
         return result
 
