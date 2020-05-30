@@ -87,6 +87,7 @@ class BattDVR(BattPrefs):
             'nbc': NBCProcessor,
             'syfy': SyFyProcessor,
             'crackle': CrackleProcessor,
+            'cwseed': CWSeedProcessor,
             # 'discovery': DiscoveryProcessor,
         }
 

@@ -465,3 +465,17 @@ class AdultSwimProcessor(BaseNetwork):
     def get_links(self, url):
         pass
 
+class CWSeedProcessor(BaseNetwork):
+    tld = 'https://www.cwseed.com/'
+    network = 'CW Seed'
+
+    def get_links(self, url):
+        r = requests.get(url)
+        data = r.text
+        soup = BeautifulSoup(data, 'lxml')
+        result = []
+        for link in soup.find(class_='video-items-flat').find_all('li'):
+            result.append(urljoin(self.tld, link.get('data-videourl')))
+
+        return result
+
